@@ -21,7 +21,7 @@ window.EffectSakuraConfig = window.EffectSakuraConfig || {
   swaySpeed: { min: 0.02, max: 0.08 }, // 【摆动速度】花瓣摆动的速度范围
   rotationSpeed: { min: 1, max: 4 }, // 【旋转速度】花瓣旋转速度范围
   opacity: { min: 0.3, max: 0.8 }, // 【透明度】花瓣透明度范围
-  fallAngle: 90, // 【飘落角度】90度=垂直下落，<90度向左，>90度向右 (建议范围: 60-120)
+  fallAngle: 0, // 【飘落角度】0度=垂直下落，正值向右，负值向左 (建议范围: -30到+30)
   colors: ['#ffb7c5', '#ffc0cb', '#ff69b4', '#ffb6c1', '#ffd1dc', '#ffffff'] // 【花瓣颜色】花瓣颜色数组，支持十六进制颜色
 };
 
@@ -45,9 +45,8 @@ window.EffectSakuraConfig = window.EffectSakuraConfig || {
         }
 
         reset() {
-            // 根据飘落角度计算生成区域
-            const angleFromVertical = config.fallAngle - 90;
-            const horizontalSpeedEstimate = (angleFromVertical / 90) * 2.5;
+            // 根据飘落角度计算生成区域 (0度=垂直，正值向右，负值向左)
+            const horizontalSpeedEstimate = (config.fallAngle / 30) * 2.5; // 30度对应最大水平速度
             const screenHeight = window.innerHeight;
             
             // 预计算花瓣在整个下落过程中的水平偏移量
@@ -55,11 +54,11 @@ window.EffectSakuraConfig = window.EffectSakuraConfig || {
             
             // 根据飘落方向调整生成区域
             let spawnX, spawnWidth;
-            if (angleFromVertical < 0) {
+            if (config.fallAngle < 0) {
                 // 向左飘落，从右侧扩展生成
                 spawnX = 0;
                 spawnWidth = window.innerWidth + maxHorizontalDrift;
-            } else if (angleFromVertical > 0) {
+            } else if (config.fallAngle > 0) {
                 // 向右飘落，从左侧扩展生成
                 spawnX = -maxHorizontalDrift;
                 spawnWidth = window.innerWidth + maxHorizontalDrift;
@@ -127,13 +126,9 @@ window.EffectSakuraConfig = window.EffectSakuraConfig || {
         update() {
             this.time += 0.016;
 
-            // 根据角度计算运动分量
-            const angleRad = (config.fallAngle * Math.PI) / 180;
-            const verticalSpeed = Math.sin(angleRad) * this.fallSpeed;
-            
-            // 修正水平速度计算：90°为基准，向右为正，向左为负
-            const angleFromVertical = config.fallAngle - 90;
-            const horizontalSpeed = (angleFromVertical / 90) * this.fallSpeed;
+            // 简化的角度计算 (0度=垂直，正值向右，负值向左)
+            const verticalSpeed = this.fallSpeed; // 垂直速度保持不变
+            const horizontalSpeed = (config.fallAngle / 30) * this.fallSpeed * 0.8; // 30度对应最大水平偏移
 
             // 按角度移动
             this.y += verticalSpeed;
