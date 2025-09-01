@@ -8,32 +8,28 @@
  * =================================================================
  */
 
+/**
+ * 樱花花瓣特效模块配置
+ * 在引入此模块前设置这些配置项
+ */
+window.EffectSakuraConfig = window.EffectSakuraConfig || {
+  enabled: true, // 【樱花特效】是否启用樱花花瓣飘散特效 (true/false)
+  petalCount: 50, // 【花瓣数量】屏幕上同时显示的花瓣数量 (建议范围: 20-100)
+  petalSize: { min: 8, max: 16 }, // 【花瓣大小】花瓣大小范围，单位像素
+  fallSpeed: { min: 2, max: 5 }, // 【下落速度】花瓣下落速度范围
+  swayAmplitude: { min: 30, max: 80 }, // 【摆动幅度】花瓣左右摆动的幅度范围
+  swaySpeed: { min: 0.02, max: 0.08 }, // 【摆动速度】花瓣摆动的速度范围
+  rotationSpeed: { min: 1, max: 4 }, // 【旋转速度】花瓣旋转速度范围
+  opacity: { min: 0.3, max: 0.8 }, // 【透明度】花瓣透明度范围
+  fallAngle: 90, // 【飘落角度】90度=垂直下落，<90度向左，>90度向右 (建议范围: 60-120)
+  colors: ['#ffb7c5', '#ffc0cb', '#ff69b4', '#ffb6c1', '#ffd1dc', '#ffffff'] // 【花瓣颜色】花瓣颜色数组，支持十六进制颜色
+};
+
 (function() {
     'use strict';
 
-    // 默认配置
-    const defaultConfig = {
-        enabled: true,              // 是否启用樱花特效
-        petalCount: 50,            // 花瓣数量
-        petalSize: { min: 8, max: 16 },  // 花瓣大小范围 (像素)
-        fallSpeed: { min: 1, max: 3 },   // 下落速度范围
-        swayAmplitude: { min: 30, max: 80 }, // 摆动幅度范围
-        swaySpeed: { min: 0.02, max: 0.08 }, // 摆动速度范围
-        rotationSpeed: { min: 1, max: 4 },   // 旋转速度范围
-        opacity: { min: 0.3, max: 0.8 },    // 透明度范围
-        windStrength: 2,           // 风力强度
-        colors: [                  // 花瓣颜色数组
-            '#ffb7c5',  // 粉色
-            '#ffc0cb',  // 浅粉色
-            '#ff69b4',  // 热粉色
-            '#ffb6c1',  // 淡粉色
-            '#ffd1dc',  // 粉白色
-            '#ffffff'   // 白色
-        ]
-    };
-
     // 获取用户配置
-    const config = Object.assign({}, defaultConfig, window.EffectSakuraConfig || {});
+    const config = window.EffectSakuraConfig;
 
     // 如果禁用则不执行
     if (!config.enabled) {
@@ -49,10 +45,33 @@
         }
 
         reset() {
-            // 位置属性
-            this.x = Math.random() * window.innerWidth;
-            this.y = -20;
-            this.z = Math.random() * 1000; // 深度层次
+            // 根据飘落角度计算生成区域
+            const angleFromVertical = config.fallAngle - 90;
+            const horizontalSpeedEstimate = (angleFromVertical / 90) * 2.5;
+            const screenHeight = window.innerHeight;
+            
+            // 预计算花瓣在整个下落过程中的水平偏移量
+            const maxHorizontalDrift = Math.abs(horizontalSpeedEstimate * screenHeight / 3);
+            
+            // 根据飘落方向调整生成区域
+            let spawnX, spawnWidth;
+            if (angleFromVertical < 0) {
+                // 向左飘落，从右侧扩展生成
+                spawnX = 0;
+                spawnWidth = window.innerWidth + maxHorizontalDrift;
+            } else if (angleFromVertical > 0) {
+                // 向右飘落，从左侧扩展生成
+                spawnX = -maxHorizontalDrift;
+                spawnWidth = window.innerWidth + maxHorizontalDrift;
+            } else {
+                // 垂直下落
+                spawnX = 0;
+                spawnWidth = window.innerWidth;
+            }
+            
+            this.x = spawnX + Math.random() * spawnWidth;
+            this.y = -20 - Math.random() * 100;
+            this.z = Math.random() * 1000;
 
             // 运动属性
             this.fallSpeed = this.randomBetween(config.fallSpeed.min, config.fallSpeed.max);
@@ -106,15 +125,21 @@
         }
 
         update() {
-            this.time += 0.016; // 约60fps
+            this.time += 0.016;
 
-            // 垂直下落
-            this.y += this.fallSpeed;
+            // 根据角度计算运动分量
+            const angleRad = (config.fallAngle * Math.PI) / 180;
+            const verticalSpeed = Math.sin(angleRad) * this.fallSpeed;
+            
+            // 修正水平速度计算：90°为基准，向右为正，向左为负
+            const angleFromVertical = config.fallAngle - 90;
+            const horizontalSpeed = (angleFromVertical / 90) * this.fallSpeed;
 
-            // 水平风力影响 - 持续的水平移动
-            this.initialX += config.windStrength * 0.3;
+            // 按角度移动
+            this.y += verticalSpeed;
+            this.initialX += horizontalSpeed;
 
-            // 水平摆动 (正弦波)
+            // 水平摆动 (正弦波) - 在基础轨迹上叠加
             const swayOffset = Math.sin(this.time * this.swaySpeed + this.swayOffset) * this.swayAmplitude;
             this.x = this.initialX + swayOffset;
 
@@ -129,7 +154,11 @@
             this.element.style.opacity = Math.max(0, Math.min(1, flickerOpacity));
 
             // 检查是否需要重置
-            if (this.y > window.innerHeight + 20 || this.x > window.innerWidth + 100 || this.x < -100) {
+            const margin = 200;
+            
+            if (this.y > window.innerHeight + margin || 
+                this.x > window.innerWidth + margin || 
+                this.x < -margin) {
                 this.reset();
                 this.setupStyles();
             }
@@ -160,7 +189,6 @@
         createPetals() {
             for (let i = 0; i < config.petalCount; i++) {
                 const petal = new SakuraPetal();
-                // 随机初始化花瓣的垂直位置，创造更自然的效果
                 petal.y = Math.random() * window.innerHeight;
                 petal.setupStyles();
                 this.petals.push(petal);
@@ -183,13 +211,11 @@
 
         animate() {
             if (!this.isActive) return;
-
             this.petals.forEach(petal => petal.update());
             this.animationId = requestAnimationFrame(() => this.animate());
         }
 
         setupEventListeners() {
-            // 窗口大小改变时重新调整花瓣位置
             window.addEventListener('resize', () => {
                 this.petals.forEach(petal => {
                     if (petal.x > window.innerWidth) {
@@ -199,7 +225,6 @@
                 });
             });
 
-            // 页面可见性变化时暂停/恢复动画
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     this.stop();
@@ -215,33 +240,52 @@
             this.petals = [];
         }
 
-        // 动态调整花瓣数量
         adjustPetalCount(newCount) {
             const currentCount = this.petals.length;
             
             if (newCount > currentCount) {
-                // 增加花瓣
                 for (let i = currentCount; i < newCount; i++) {
                     const petal = new SakuraPetal();
                     this.petals.push(petal);
                 }
             } else if (newCount < currentCount) {
-                // 减少花瓣
                 const petalsToRemove = this.petals.splice(newCount);
                 petalsToRemove.forEach(petal => petal.destroy());
             }
+            
+            config.petalCount = newCount;
         }
 
-        // 动态调整风力
-        adjustWindStrength(strength) {
-            config.windStrength = strength;
+        adjustFallAngle(angle) {
+            const oldAngle = config.fallAngle;
+            config.fallAngle = angle;
+            
+            if (Math.abs(oldAngle - angle) > 5) {
+                this.redistributePetals();
+            }
+        }
+
+        redistributePetals() {
+            const redistributeCount = Math.min(this.petals.length / 3, 15);
+            
+            for (let i = 0; i < redistributeCount; i++) {
+                const petal = this.petals[Math.floor(Math.random() * this.petals.length)];
+                petal.reset();
+                petal.y = Math.random() * window.innerHeight;
+                petal.setupStyles();
+            }
+        }
+
+        regenerateAllPetals() {
+            this.petals.forEach(petal => petal.destroy());
+            this.petals = [];
+            this.createPetals();
         }
     }
 
     // 初始化樱花效果
     let sakuraManager = null;
 
-    // 等待DOM加载完成
     function initSakura() {
         if (!sakuraManager) {
             sakuraManager = new SakuraManager();
@@ -257,7 +301,8 @@
                     }
                 },
                 adjustPetalCount: (count) => sakuraManager.adjustPetalCount(count),
-                adjustWindStrength: (strength) => sakuraManager.adjustWindStrength(strength),
+                adjustFallAngle: (angle) => sakuraManager.adjustFallAngle(angle),
+                regenerateAll: () => sakuraManager.regenerateAllPetals(),
                 isActive: () => sakuraManager ? sakuraManager.isActive : false
             };
 
@@ -282,19 +327,16 @@
             will-change: transform, opacity;
         }
         
-        /* 优化性能的CSS */
         .sakura-petal * {
             pointer-events: none;
         }
         
-        /* 为不同设备优化 */
         @media (max-width: 768px) {
             .sakura-petal {
-                transform: translateZ(0); /* 启用硬件加速 */
+                transform: translateZ(0);
             }
         }
         
-        /* 减少动画对性能的影响 */
         @media (prefers-reduced-motion: reduce) {
             .sakura-petal {
                 animation: none !important;
