@@ -1,0 +1,9 @@
+# 忽略备份文件夹
+backup/
+
+# 忽略音乐播放器模块（暂时不上传）
+js/music-player.js
+
+# 忽略系统文件
+.DS_Store
+Thumbs.db

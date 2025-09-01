@@ -1,0 +1,86 @@
+<!--
+=================================================================
+哪吒面板界面美化 - 模块化版本 (NeZha Panel UI Beautification)
+
+@description 为NeZha面板提供模块化的界面美化功能
+@author Faiz
+@version 1.0.0
+@repository https://github.com/kamanfaiz/NeZha-UI
+=================================================================
+-->
+
+<!-- 引入阿里巴巴图标矢量库 !-->
+<head>
+  <link
+    rel="stylesheet"
+    href="//at.alicdn.com/t/c/font_4956031_b03xczqy2rs.css"
+  />
+  <!-- 替换为您的 Iconfont 链接 -->
+</head>
+
+<!-- 1. 全局配置脚本 -->
+<script>
+  // ------------------ 哪吒面板基础配置 ------------------
+  window.CustomBackgroundImage = "https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/img/ThousandYearBloodWar.png"; // 【PC端背景】桌面端页面的主背景图片URL
+  window.CustomMobileBackgroundImage = "https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/img/ThousandYearBloodWar.png"; // 【移动端背景】移动端页面的主背景图片URL
+  window.CustomLogo = "https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/img/BleachLogo.png"; // 【LOGO】页面左上角的LOGO图片URL
+  window.CustomDesc = "『卍解·天鎖斬月』"; // 【描述】LOGO下方的描述文字
+  window.ShowNetTransfer = true; // 【流量显示】是否在卡片上显示实时上下行流量 (true/false)
+  window.ForceCardInline = false; // 【卡片排列】是否强制所有服务器卡片在同一行显示 (true/false)
+  window.FixedTopServerName = false; // 【名称位置】是否将服务器名称固定在卡片顶部 (true/false)
+  window.ForceTheme = ""; // 【强制主题】强制使用指定主题 ("light" 或 "dark", 留空则跟随系统)
+  
+  // ------------------ 美化模块配置 ------------------
+  // 自定义链接配置
+  window.CustomLinks = JSON.stringify([
+    { link: "https://blog.faiz.hidns.co", name: "Blog", icon: "icon-book" },
+    { link: "https://t.me/Kaixa913_bot", name: "Telegram", icon: "icon-paper-plane" },
+    { link: "https://kuma.588945.xyz/status/game", name: "Uptime", icon: "icon-hourglass-start" }
+  ]); // 【自定义链接】导航栏的自定义链接 (JSON格式), 新增 icon 字段，请确保 icon值为 iconfont.css 中真实存在的 class
+  window.CustomLinkIconSize = "16px"; // 【链接图标】图标大小 (例如: "16px", "1.2em")
+  window.CustomLinkIconColor = ""; // 【链接图标】图标颜色 (例如: "#fff"), 留空则继承文本颜色
+  window.CustomLinkIconMarginRight = "1px"; // 【链接图标】图标与文字的间距
+  
+  // 插图配置
+  window.DisableAnimatedMan = true; // 【人物动画】是否禁用看板娘动画 (true/false) - 必须设为true自定义插图才会生效
+  window.CustomIllustration = "https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/img/Candice.png"; // 【自定义插图】右下角的插图URL
+  window.IllustrationStyleConfig = {
+    width: "120px", // 【插图宽度】插图的宽度 (例如: "120px", "10vw")
+    right: "-10px", // 【右边距】距离右边的距离 (例如: "-10px", "20px")
+    top: "-120px", // 【上边距】距离顶部的距离 (例如: "-120px", "50px")
+    zIndex: "10", // 【层级】插图的显示层级
+    transitionDuration: "0.4s", // 【过渡时间】动画过渡时间 (例如: "0.4s", "0.6s")
+    initialOffset: "20px" // 【初始偏移】插图出现时的初始偏移距离
+  };
+  
+  // 访客信息配置
+  window.VisitorInfoConfig = {
+    enabled: true, // 【访客信息】是否启用访客信息显示 (true/false)
+    position: "left", // 【访客信息位置】面板显示位置 ("left" 或 "right")
+    autoHideDelay: 2600 // 【访客信息自动隐藏】首次加载时自动隐藏的延迟时间 (毫秒)
+  };
+
+  // 烟花特效配置
+  window.EffectFireworksConfig = {
+    enabled: true // 【烟花特效】是否启用点击烟花特效 (true/false)
+  };
+    
+  // 下雨特效配置
+  window.EffectRainConfig = {
+    enabled: true, // 【下雨特效】是否启用背景下雨特效 (true/false)
+    densityFactor: 0.0004, // 【雨滴密度】雨滴密度系数，值越大雨越密 (建议范围: 0.0001-0.001)
+    maxDrops: 4000, // 【最大雨滴数】屏幕上同时显示的最大雨滴数量
+    minDrops: 200 // 【最小雨滴数】屏幕上保持的最小雨滴数量
+  };
+</script>
+
+<!-- 2. 加载所有模块 (通过 jsDelivr CDN) -->
+<!-- 功能模块 (可以并行加载) -->
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/js/custom-links.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/js/illustration.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@latest/js/visitor-info.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/js/effect-fireworks.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/js/effect-rain.js"></script>
+
+<!-- 主初始化脚本 (最后加载) -->
+<script src="https://cdn.jsdelivr.net/gh/kamanfaiz/NeZha-UI@main/main.js"></script>
