@@ -305,6 +305,8 @@ window.EffectSakuraConfig = window.EffectSakuraConfig || {
             window.SakuraControl = window.NeZhaEffectSakura;
 
             console.log('🌸 樱花花瓣动画已启动');
+            console.log('🌸 当前飘落角度:', config.fallAngle);
+            console.log('🌸 完整配置:', config);
         }
     }
 
