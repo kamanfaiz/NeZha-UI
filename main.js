@@ -20,7 +20,8 @@ function main() {
     { name: 'NeZhaIllustration', displayName: '插图模块' },
     { name: 'NeZhaEffectFireworks', displayName: '烟花特效模块' },
     { name: 'NeZhaVisitorInfo', displayName: '访客信息模块' },
-    { name: 'NeZhaEffectRain', displayName: '下雨特效模块' }
+    { name: 'NeZhaEffectRain', displayName: '下雨特效模块' },
+    { name: 'NeZhaEffectSakura', displayName: '樱花花瓣特效模块' }
   ];
 
   let loadedCount = 0;
