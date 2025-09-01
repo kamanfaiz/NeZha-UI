@@ -111,12 +111,12 @@
             // 垂直下落
             this.y += this.fallSpeed;
 
+            // 水平风力影响 - 持续的水平移动
+            this.initialX += config.windStrength * 0.3;
+
             // 水平摆动 (正弦波)
             const swayOffset = Math.sin(this.time * this.swaySpeed + this.swayOffset) * this.swayAmplitude;
             this.x = this.initialX + swayOffset;
-
-            // 风力影响
-            this.x += config.windStrength * 0.1;
 
             // 旋转
             this.rotation += this.rotationSpeed;
@@ -129,7 +129,7 @@
             this.element.style.opacity = Math.max(0, Math.min(1, flickerOpacity));
 
             // 检查是否需要重置
-            if (this.y > window.innerHeight + 20 || this.x > window.innerWidth + 100) {
+            if (this.y > window.innerHeight + 20 || this.x > window.innerWidth + 100 || this.x < -100) {
                 this.reset();
                 this.setupStyles();
             }

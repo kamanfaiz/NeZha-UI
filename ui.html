@@ -67,7 +67,7 @@
     
   // 下雨特效配置
   window.EffectRainConfig = {
-    enabled: true, // 【下雨特效】是否启用背景下雨特效 (true/false)
+    enabled: false, // 【下雨特效】是否启用背景下雨特效 (true/false)
     densityFactor: 0.0004, // 【雨滴密度】雨滴密度系数，值越大雨越密 (建议范围: 0.0001-0.001)
     maxDrops: 4000, // 【最大雨滴数】屏幕上同时显示的最大雨滴数量
     minDrops: 200 // 【最小雨滴数】屏幕上保持的最小雨滴数量
@@ -76,14 +76,14 @@
   // 樱花花瓣特效配置
   window.EffectSakuraConfig = {
     enabled: true, // 【樱花特效】是否启用樱花花瓣飘散特效 (true/false)
-    petalCount: 50, // 【花瓣数量】屏幕上同时显示的花瓣数量 (建议范围: 20-100)
+    petalCount: 200, // 【花瓣数量】屏幕上同时显示的花瓣数量 (建议范围: 20-100)
     petalSize: { min: 8, max: 16 }, // 【花瓣大小】花瓣大小范围，单位像素
     fallSpeed: { min: 1, max: 3 }, // 【下落速度】花瓣下落速度范围
     swayAmplitude: { min: 30, max: 80 }, // 【摆动幅度】花瓣左右摆动的幅度范围
     swaySpeed: { min: 0.02, max: 0.08 }, // 【摆动速度】花瓣摆动的速度范围
     rotationSpeed: { min: 1, max: 4 }, // 【旋转速度】花瓣旋转速度范围
     opacity: { min: 0.3, max: 0.8 }, // 【透明度】花瓣透明度范围
-    windStrength: 2, // 【风力强度】影响花瓣飘散方向的风力强度
+    windStrength: -4, // 【风力强度】影响花瓣飘散方向的风力强度，负值向左，正值向右
     colors: ['#ffb7c5', '#ffc0cb', '#ff69b4', '#ffb6c1', '#ffd1dc', '#ffffff'] // 【花瓣颜色】花瓣颜色数组，支持十六进制颜色
   };
 </script>
